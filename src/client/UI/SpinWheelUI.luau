@@ -43,7 +43,7 @@ type SpinResultData = {
 local SpinWheelUI = {}
 
 function SpinWheelUI.Init(screenGui: ScreenGui)
-	local _, spinClicked = ButtonComponent.new({
+	local spinButton, spinClicked = ButtonComponent.new({
 		Text = "Spin!",
 		Size = UDim2.fromOffset(180, 56),
 		AnchorPoint = Vector2.new(0.5, 1),
@@ -52,9 +52,24 @@ function SpinWheelUI.Init(screenGui: ScreenGui)
 		Parent = screenGui,
 	})
 
+	-- Spin only resolves server-side during Intermission (see
+	-- RewardRollService.onRequestSpin) — dim + disable the button the rest of
+	-- the time so a click isn't a silent no-op.
+	local function setSpinEnabled(enabled: boolean)
+		spinButton.Active = enabled
+		spinButton.BackgroundTransparency = if enabled then 0 else 0.5
+		spinButton.TextTransparency = if enabled then 0 else 0.5
+	end
+	setSpinEnabled(false)
+
 	local requestSpin = Remotes.GetEvent(NetConstants.RequestSpin)
 	spinClicked:Connect(function()
 		requestSpin:FireServer()
+	end)
+
+	local roundStateChanged = Remotes.GetEvent(NetConstants.RoundStateChanged)
+	roundStateChanged.OnClientEvent:Connect(function(data: { Phase: string })
+		setSpinEnabled(data.Phase == "Intermission")
 	end)
 
 	local badge = Instance.new("ImageLabel")

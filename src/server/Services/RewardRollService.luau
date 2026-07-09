@@ -13,6 +13,7 @@ local NetConstants = require(ReplicatedStorage.Shared.Net.NetConstants)
 local Remotes = require(ReplicatedStorage.Shared.Net.Remotes)
 local RewardTableConfig = require(ReplicatedStorage.Shared.Config.RewardTableConfig)
 local RoundConfig = require(ReplicatedStorage.Shared.Config.RoundConfig)
+local RoundManagerService = require(script.Parent.RoundManagerService)
 
 local RewardRollService = {}
 
@@ -29,6 +30,10 @@ function RewardRollService.GetCoins(player: Player): number
 end
 
 local function onRequestSpin(player: Player)
+	if RoundManagerService.GetPhase() ~= "Intermission" then
+		return
+	end
+
 	local now = os.clock()
 	if (nextSpinAllowedAt[player] or 0) > now then
 		return
