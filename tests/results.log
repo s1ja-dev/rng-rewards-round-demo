@@ -1,0 +1,21 @@
+Parsed reward table from RewardTableConfig.luau:
+  Common     weight=50 -> 50.00% expected
+  Uncommon   weight=30 -> 30.00% expected
+  Rare       weight=15 -> 15.00% expected
+  Epic       weight=4 -> 4.00% expected
+  Legendary  weight=1 -> 1.00% expected
+Total weight: 100
+
+Edge cases:
+  roll = 0                -> Common (expect first entry, Common)
+  roll = totalWeight - 1e-9 -> Legendary (expect last entry, Legendary)
+  roll = totalWeight (out of range) -> Legendary (fallback path, expect last entry)
+
+Simulated 100000 rolls:
+  Common     expected=50.00%  actual=50.16%  count=50156  deviation=0.156pp
+  Uncommon   expected=30.00%  actual=30.04%  count=30042  deviation=0.042pp
+  Rare       expected=15.00%  actual=14.76%  count=14764  deviation=0.236pp
+  Epic       expected=4.00%  actual=4.01%  count=4008  deviation=0.008pp
+  Legendary  expected=1.00%  actual=1.03%  count=1030  deviation=0.030pp
+
+Max deviation from expected odds: 0.236 percentage points over 100000 trials.
